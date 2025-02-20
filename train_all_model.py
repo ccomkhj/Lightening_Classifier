@@ -8,6 +8,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 import pytorch_lightning as pl
 import torch
 import os
+import csv
 from pathlib import Path
 from datetime import datetime
 
@@ -38,11 +39,11 @@ models_to_test = {
     },
     "SwinTransformer": {
         "class": SwinTransformerClassifier,
-        "config": {**model_config, "target_size": (224, 224)},
+        "config": {**model_config, "target_size": (384, 384)},
     },
     "ViT": {
         "class": ViTClassifier,
-        "config": {**model_config, "target_size": (224, 224)},
+        "config": {**model_config, "target_size": (384, 384)},
     },
     "DenseNet121": {
         "class": DenseNetClassifier,
@@ -54,6 +55,17 @@ models_to_test = {
     },
 }
 
+# Create a timestamp for the log file
+now = datetime.now().strftime("%Y%m%d_%H%M%S")
+log_file = f"model_performance_log_{now}.csv"  # Include timestamp in the log file name
+log_columns = ["Model", "Test Accuracy", 'Test Precision', 'Test Recall', 'Test F1', "Training Time", "Timestamp"]
+
+# Check if the log file exists, if not, create it and write the header
+if not os.path.exists(log_file):
+    with open(log_file, mode="w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=log_columns)
+        writer.writeheader()
+
 # Training and testing loop
 for model_name, model_info in models_to_test.items():
     print(f"Training and testing {model_name}...")
@@ -63,13 +75,13 @@ for model_name, model_info in models_to_test.items():
     config = model_info["config"]
     model = model_class(**config)
 
-    # Create a timestamp and get architecture name
-    now = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Create a timestamp for this model's training
+    model_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     arch = model_name.lower()
 
     # Training setup
     checkpoint_cb = ModelCheckpoint(
-        dirpath=f"checkpoints/{now}",  # Save checkpoints inside "checkpoints/{now}" folder
+        dirpath=f"checkpoints/{model_timestamp}",  # Save checkpoints inside "checkpoints/{timestamp}" folder
         filename=f"{arch}_epoch{{epoch}}.pth",  # Filename includes model architecture and epoch number
         monitor="val_acc",
         mode="max",
@@ -78,12 +90,12 @@ for model_name, model_info in models_to_test.items():
 
     early_stop_cb = EarlyStopping(
         monitor="val_acc",
-        patience=20,
+        patience=60,
         mode="max",
     )
 
     trainer = pl.Trainer(
-        max_epochs=2,
+        max_epochs=120,
         callbacks=[checkpoint_cb, early_stop_cb],
         accelerator="auto",
         devices=1,
@@ -92,18 +104,35 @@ for model_name, model_info in models_to_test.items():
     )
 
     # Train the model
+    start_time = datetime.now()
     trainer.fit(model)
+    training_time = datetime.now() - start_time
 
     # Test the model (if test set available)
+    test_accuracy = None
     if test_path.exists():
-        trainer.test(ckpt_path="best")
-    
+        test_results = trainer.test(ckpt_path="best")
+        test_accuracy = test_results[0]["test_acc"]
+        test_precision = test_results[0]["test_precision"]
+        test_recall = test_results[0]["test_recall"]
+        test_f1 = test_results[0]["test_f1"]
+
+    # Log metrics to the log file
+    with open(log_file, mode="a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=log_columns)
+        writer.writerow({
+            "Model": model_name,
+            "Test Accuracy": test_accuracy,
+            "Test Precision": test_precision,
+            "Test Recall": test_recall,
+            "Test F1": test_f1,
+            "Training Time": str(training_time),
+            "Timestamp": model_timestamp,
+        })
+
+    # Save final model weights
     os.makedirs("saved_model", exist_ok=True)
-
-    # Construct dynamic filename for the final model
-    final_filename = f"saved_model/{arch}_final_{now}.pth"
-
-    # Save final model weights with the dynamic filename
+    final_filename = f"saved_model/{arch}_final_{model_timestamp}.pth"
     if hasattr(model, "resnet_model"):  # For ResNet
         torch.save(model.resnet_model.state_dict(), final_filename)
     elif hasattr(model, "swin_model"):  # For Swin Transformer

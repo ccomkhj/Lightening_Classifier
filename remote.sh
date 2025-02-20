@@ -1,0 +1,1 @@
+screen -dmS session_name bash -c 'python3 train_all_model.py > output.log 2>&1'

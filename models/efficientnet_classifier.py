@@ -31,7 +31,7 @@ class EfficientNetClassifier(BaseClassifier):
         )
         
         # Load pre-trained EfficientNet
-        self.efficientnet_model = EfficientNet.from_pretrained('efficientnet-b0')
+        self.efficientnet_model = EfficientNet.from_pretrained('efficientnet-b7') #b1-b7
         
         # Replace the classifier head
         linear_size = self.efficientnet_model._fc.in_features

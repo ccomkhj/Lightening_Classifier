@@ -17,7 +17,7 @@ This repository contains modular PyTorch Lightning implementations of popular de
    - Efficient feature reuse with dense connections.
 
 4. **EfficientNetClassifier** (`efficientnet_classifier.py`)
-   - Supports EfficientNet-B0.
+   - Supports EfficientNet-B0 to B7.
    - Lightweight and scalable for small datasets.
 
 5. **ViTClassifier** (`vit_classifier.py`)
