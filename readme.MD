@@ -46,11 +46,11 @@ pip install pytorch_lightning torchvision transformers efficientnet-pytorch
 Use the `train_all_models.py` script to train and test all models and check what works the best.:
 
 
-## Extending the Repository**:
+## Extending the Repository:
 **To add a new model**:
 - Create a new Python file (e.g., new_model_classifier.py).
 - Inherit from BaseClassifier and implement the model-specific logic.
 - Add the new model to the models_to_test dictionary in train_all_models.py.
 
 ## License
-This project is licensed under the MIT License. See LICENSE for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
