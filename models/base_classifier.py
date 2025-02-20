@@ -27,6 +27,7 @@ class BaseClassifier(pl.LightningModule):
         batch_size=16,
         transfer=True,
         tune_fc_only=True,
+        target_size=(730, 968),  # Default size for non-transformer models
     ):
         super().__init__()
         self.num_classes = num_classes
@@ -38,6 +39,7 @@ class BaseClassifier(pl.LightningModule):
         self.optimizer = self.optimizers[optimizer]
         self.transfer = transfer
         self.tune_fc_only = tune_fc_only
+        self.target_size = target_size  # Add target_size attribute
         
         # Loss and metrics
         self.loss_fn = nn.CrossEntropyLoss()
@@ -58,22 +60,20 @@ class BaseClassifier(pl.LightningModule):
         return loss, acc, precision, recall, f1, preds, y
 
     def _dataloader(self, data_path, shuffle=False):
-        resize_size = (1460, 1936)
-        
         if shuffle:
             transform = transforms.Compose([
-                transforms.Resize(resize_size),
+                transforms.Resize(self.target_size),  # Use target_size
                 transforms.RandAugment(num_ops=2, magnitude=9),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], 
-                                     std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
             ])
         else:
             transform = transforms.Compose([
-                transforms.Resize(resize_size),
+                transforms.Resize(self.target_size),  # Use target_size
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], 
-                                     std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
             ])
         
         dataset = ImageFolder(root=data_path, transform=transform)

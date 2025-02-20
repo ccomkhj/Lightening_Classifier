@@ -1,17 +1,12 @@
-import torchvision.models as models
+# pip install efficientnet-pytorch
+from efficientnet_pytorch import EfficientNet
+from models.base_classifier import BaseClassifier
 import torch.nn as nn
-from base_classifier import BaseClassifier
 
-class ResNextClassifier(BaseClassifier):
-    resnexts = {
-        50: models.resnext50_32x4d,
-        101: models.resnext101_32x8d,
-    }
-
+class EfficientNetClassifier(BaseClassifier):
     def __init__(
         self,
         num_classes,
-        resnext_version,
         train_path,
         val_path,
         test_path=None,
@@ -20,6 +15,7 @@ class ResNextClassifier(BaseClassifier):
         batch_size=16,
         transfer=True,
         tune_fc_only=True,
+        target_size=(730, 968), 
     ):
         super().__init__(
             num_classes=num_classes,
@@ -31,20 +27,22 @@ class ResNextClassifier(BaseClassifier):
             batch_size=batch_size,
             transfer=transfer,
             tune_fc_only=tune_fc_only,
+            target_size=target_size,
         )
-        self.resnext_version = resnext_version
         
-        # ResNext model setup
-        self.resnext_model = self.resnexts[resnext_version](pretrained=transfer)
-        linear_size = self.resnext_model.fc.in_features
-        self.resnext_model.fc = nn.Linear(linear_size, num_classes)
+        # Load pre-trained EfficientNet
+        self.efficientnet_model = EfficientNet.from_pretrained('efficientnet-b0')
+        
+        # Replace the classifier head
+        linear_size = self.efficientnet_model._fc.in_features
+        self.efficientnet_model._fc = nn.Linear(linear_size, num_classes)
         
         # Freeze layers if needed
         if tune_fc_only:
-            for param in self.resnext_model.parameters():
+            for param in self.efficientnet_model.parameters():
                 param.requires_grad = False
-            for param in self.resnext_model.fc.parameters():
+            for param in self.efficientnet_model._fc.parameters():
                 param.requires_grad = True
 
     def forward(self, X):
-        return self.resnext_model(X)
+        return self.efficientnet_model(X)
