@@ -1,20 +1,17 @@
 import torchvision.models as models
-from base_classifier import BaseClassifier
 import torch.nn as nn
+from base_classifier import BaseClassifier
 
-class ResNetClassifier(BaseClassifier):
-    resnets = {
-        18: models.resnet18,
-        34: models.resnet34,
-        50: models.resnet50,
-        101: models.resnet101,
-        152: models.resnet152,
+class ResNextClassifier(BaseClassifier):
+    resnexts = {
+        50: models.resnext50_32x4d,
+        101: models.resnext101_32x8d,
     }
 
     def __init__(
         self,
         num_classes,
-        resnet_version,
+        resnext_version,
         train_path,
         val_path,
         test_path=None,
@@ -35,19 +32,19 @@ class ResNetClassifier(BaseClassifier):
             transfer=transfer,
             tune_fc_only=tune_fc_only,
         )
-        self.resnet_version = resnet_version
+        self.resnext_version = resnext_version
         
-        # ResNet model setup
-        self.resnet_model = self.resnets[resnet_version](pretrained=transfer)
-        linear_size = self.resnet_model.fc.in_features
-        self.resnet_model.fc = nn.Linear(linear_size, num_classes)
+        # ResNext model setup
+        self.resnext_model = self.resnexts[resnext_version](pretrained=transfer)
+        linear_size = self.resnext_model.fc.in_features
+        self.resnext_model.fc = nn.Linear(linear_size, num_classes)
         
         # Freeze layers if needed
         if tune_fc_only:
-            for param in self.resnet_model.parameters():
+            for param in self.resnext_model.parameters():
                 param.requires_grad = False
-            for param in self.resnet_model.fc.parameters():
+            for param in self.resnext_model.fc.parameters():
                 param.requires_grad = True
 
     def forward(self, X):
-        return self.resnet_model(X)
+        return self.resnext_model(X)
