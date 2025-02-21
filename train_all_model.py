@@ -1,4 +1,5 @@
 from models.resnet_classifier import ResNetClassifier
+from models.resnext_classifier import ResNextClassifier
 from models.swin_transformer_classifier import SwinTransformerClassifier
 from models.vit_classifier import ViTClassifier
 from models.densenet_classifier import DenseNetClassifier
@@ -35,7 +36,11 @@ model_config = {
 models_to_test = {
     "ResNet101": {
         "class": ResNetClassifier,
-        "config": {**model_config, "resnet_version": 101, "target_size": (730, 968)},
+        "config": {**model_config, "resnet_version": 101, "target_size": (730*2, 968*2)},
+    },
+    "ResNext101": {
+        "class": ResNextClassifier,
+        "config": {**model_config, "resnexts_version": 101, "target_size": (730*2, 968*2)},
     },
     "SwinTransformer": {
         "class": SwinTransformerClassifier,
@@ -47,11 +52,11 @@ models_to_test = {
     },
     "DenseNet121": {
         "class": DenseNetClassifier,
-        "config": {**model_config, "target_size": (730, 968)},
+        "config": {**model_config, "target_size": (730*2, 968*2)},
     },
-    "EfficientNetB0": {
+    "EfficientNetB7": {
         "class": EfficientNetClassifier,
-        "config": {**model_config, "target_size": (730, 968)},
+        "config": {**model_config, "target_size": (730*2, 968*2)},
     },
 }
 
@@ -90,7 +95,7 @@ for model_name, model_info in models_to_test.items():
 
     early_stop_cb = EarlyStopping(
         monitor="val_acc",
-        patience=60,
+        patience=120,
         mode="max",
     )
 
@@ -100,7 +105,7 @@ for model_name, model_info in models_to_test.items():
         accelerator="auto",
         devices=1,
         enable_progress_bar=True,
-        log_every_n_steps=10,
+        log_every_n_steps=40,
     )
 
     # Train the model
