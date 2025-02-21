@@ -80,6 +80,11 @@ class BaseClassifier(pl.LightningModule):
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=shuffle, num_workers=4)
 
     def training_step(self, batch, batch_idx):
+        # Log the learning rate
+        opt = self.trainer.optimizers[0]  # assuming single optimizer
+        lr = opt.param_groups[0]['lr']
+        self.log("lr", lr, on_step=True, on_epoch=True, prog_bar=True)
+        
         loss, acc, precision, recall, f1, _, _ = self._step(batch)
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("train_acc", acc, on_step=True, on_epoch=True, prog_bar=True)
