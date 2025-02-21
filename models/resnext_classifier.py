@@ -52,7 +52,7 @@ class ResNextClassifier(BaseClassifier):
     def forward(self, X):
         return self.resnext_model(X)
     
-        @classmethod
+    @classmethod
     def load_model(cls, model_weight_path, **kwargs):
         """
         Creates an instance of the model and loads the weights from a checkpoint.
