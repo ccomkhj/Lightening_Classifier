@@ -5,7 +5,7 @@ from models.base_classifier import BaseClassifier
 class ResNextClassifier(BaseClassifier):
     resnexts = {
         50: models.resnext50_32x4d,
-        101: models.resnext101_32x8d,
+        101: models.resnext101_64x4d,
     }
 
     def __init__(

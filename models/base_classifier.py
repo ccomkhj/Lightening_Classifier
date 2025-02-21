@@ -127,6 +127,7 @@ class BaseClassifier(pl.LightningModule):
         
         # Save model configuration as JSON
         config = {
+            "classifier": self.__class__.__name__,
             "num_classes": self.num_classes,
             "train_path": self.train_path.__str__(),
             "val_path": self.val_path.__str__(),
