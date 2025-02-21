@@ -63,9 +63,9 @@ Use the `demo.ipynb` to follow the whole workflow with a model.
 
 ## Extending the Repository:
 **To add a new model**:
-- Create a new Python file (e.g., new_model_classifier.py).
+- Create a new Python file under `models` directory. (e.g., new_model_classifier.py).
 - Inherit from BaseClassifier and implement the model-specific logic.
-- Add the new model to the models_to_test dictionary in train_all_models.py.
+- If needed, Add the new model to the `models_to_test` dictionary in [train_all_models.py](train_all_models.py).
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
