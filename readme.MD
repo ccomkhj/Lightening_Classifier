@@ -45,6 +45,21 @@ pip install pytorch_lightning torchvision transformers efficientnet-pytorch
 2. **Train and Test Models**:
 Use the `train_all_models.py` script to train and test all models and check what works the best.:
 
+After completion, you will get report in csv as below.
+Based on the metric, decide which model is appropriate for your task.
+```
+| Model            | Test Accuracy   | Test Precision  | Test Recall     | Test F1         | Training Time  | Timestamp      |
+|------------------|-----------------|-----------------|-----------------|-----------------|----------------|----------------|
+| ResNext101       | 0.78899085521698| 0.7996436357498169| 0.78899085521698| 0.7887938022613525| 1:47:51.260405 | 20250221_094927|
+| ResNet101        | 0.78899085521698| 0.7946293354034424| 0.78899085521698| 0.7877031564712524| 1:03:14.367643 | 20250221_113730|
+| SwinTransformer  | 0.8807339668273926| 0.8827170133590698| 0.8807339072227478| 0.8803048133850098| 0:22:18.137873 | 20250221_124052|
+| ViT              | 0.8440366983413696| 0.8472263813018799| 0.8440366983413696| 0.8441518545150757| 0:22:27.548590 | 20250221_130314|
+| DenseNet121      | 0.853210985660553| 0.8623536229133606| 0.853210985660553| 0.8529086112976074| 0:58:01.608439 | 20250221_132545|
+| EfficientNetB7   | 0.8440366983413696| 0.8501067161560059| 0.8440366983413696| 0.844648003578186| 3:06:57.563459 | 20250221_142354|
+```
+
+Use the `demo.ipynb` to follow the whole workflow with a model.
+
 
 ## Extending the Repository:
 **To add a new model**:

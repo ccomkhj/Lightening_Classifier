@@ -2,6 +2,7 @@
 from transformers import SwinForImageClassification
 from models.base_classifier import BaseClassifier
 import torch.nn as nn
+import torch
 
 class SwinTransformerClassifier(BaseClassifier):
     def __init__(
@@ -56,3 +57,31 @@ class SwinTransformerClassifier(BaseClassifier):
         if X.shape[-2:] != self.target_size:
             X = nn.functional.interpolate(X, size=self.target_size, mode="bilinear", align_corners=False)
         return self.swin_model(X).logits
+    
+    @classmethod
+    def load_model(cls, model_weight_path, **kwargs):
+        """
+        Creates an instance of the model and loads the weights from a checkpoint.
+        
+        Args:
+          model_weight_path (str): The file path to the saved weights.
+          **kwargs: All other keyword args required to instantiate the model (e.g., num_classes,
+                    train_path, etc.).
+                    
+        Returns:
+          An instance of SwinTransformerClassifier in evaluation mode.
+        """
+        # Instantiate the model with provided kwargs
+        model = cls(**kwargs)
+        
+        # Load the saved state dictionary
+        state_dict = torch.load(model_weight_path, map_location="cpu")
+        
+        # Optionally adjust keys if the file was saved without the "swin_model." prefix.
+        sample_key = next(iter(state_dict))
+        if not sample_key.startswith("swin_model."):
+            state_dict = {"swin_model." + key: value for key, value in state_dict.items()}
+        
+        model.load_state_dict(state_dict, strict=False)
+        model.eval()  # Set the model to evaluation mode
+        return model
