@@ -14,7 +14,7 @@ from pathlib import Path
 from datetime import datetime
 
 # Configuration
-DATA_ROOT = Path("split")  # Update this path
+DATA_ROOT = Path("split/classification/Merged")  # Update this path
 train_path = DATA_ROOT / "train"
 val_path = DATA_ROOT / "val"
 test_path = DATA_ROOT / "test"
@@ -27,20 +27,20 @@ model_config = {
     "test_path": test_path,
     "optimizer": "adam",
     "lr": 1e-3,
-    "batch_size": 32,
+    "batch_size": 8,
     "transfer": True,
     "tune_fc_only": True,
 }
 
 # Model-specific configurations
 models_to_test = {
+    "ResNext101": {
+        "class": ResNextClassifier,
+        "config": {**model_config, "resnext_version": 101, "target_size": (730*2, 968*2)},
+    },
     "ResNet101": {
         "class": ResNetClassifier,
         "config": {**model_config, "resnet_version": 101, "target_size": (730*2, 968*2)},
-    },
-    "ResNext101": {
-        "class": ResNextClassifier,
-        "config": {**model_config, "resnexts_version": 101, "target_size": (730*2, 968*2)},
     },
     "SwinTransformer": {
         "class": SwinTransformerClassifier,
@@ -86,8 +86,8 @@ for model_name, model_info in models_to_test.items():
 
     # Training setup
     checkpoint_cb = ModelCheckpoint(
-        dirpath=f"checkpoints/{model_timestamp}",  # Save checkpoints inside "checkpoints/{timestamp}" folder
-        filename=f"{arch}_epoch{{epoch}}.pth",  # Filename includes model architecture and epoch number
+        dirpath=f"checkpoints/{arch}_{model_timestamp}",  # Save checkpoints inside "checkpoints/{timestamp}" folder
+        filename=f"{arch}_epoch{{epoch}}",  # Filename includes model architecture and epoch number
         monitor="val_acc",
         mode="max",
         save_top_k=1,
@@ -95,7 +95,7 @@ for model_name, model_info in models_to_test.items():
 
     early_stop_cb = EarlyStopping(
         monitor="val_acc",
-        patience=120,
+        patience=120, # keep it low if you want an active earlystopping.
         mode="max",
     )
 
