@@ -42,7 +42,7 @@ This repository contains modular PyTorch Lightning implementations of popular de
 pip install pytorch_lightning torchvision transformers efficientnet-pytorch
 ```
 
-2. **Train and Test Models**:
+2. **Benchmarking Models**:
 Use the `train_all_models.py` script to train and test all models and check what works the best.:
 
 After completion, you will get report in csv as below.
@@ -58,8 +58,22 @@ Based on the metric, decide which model is appropriate for your task.
 | EfficientNetB7   | 0.8440366983413696| 0.8501067161560059| 0.8440366983413696| 0.844648003578186| 3:06:57.563459 | 20250221_142354|
 ```
 
-Use the `demo.ipynb` to follow the whole workflow with a model.
+3. **Train, Test and Inference demo**
+Use the `demo.ipynb` to follow the whole workflow with a model architecture.
 
+4. **GRAD-CAM Visualization**
+
+The [grad_cam.ipynb](grad_cam.ipynb) notebook provides a detailed workflow for generating Grad-CAM (Gradient-weighted Class Activation Mapping) heatmaps to visualize which regions of an image are most influential for the model's predictions.
+
+*Currently supoprted*
+- [x] SwinTransformer
+- [ ] ResNet
+- [ ] ResNext
+- [ ] DenseNet
+- [ ] EfficientNet
+- [ ] ViT
+
+![Grad-CAM Heatmap](demo/heat_map.png)
 
 ## Extending the Repository:
 **To add a new model**:

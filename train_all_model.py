@@ -8,10 +8,27 @@ from models.efficientnet_classifier import EfficientNetClassifier
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 import pytorch_lightning as pl
 import torch
+
 import os
 import csv
 from pathlib import Path
 from datetime import datetime
+import random
+import numpy as np
+
+# Fix the seed for reproducibility
+seed = 42  # You can choose any seed value
+
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+
+# Also set the seed for PyTorch Lightning
+pl.seed_everything(seed)
 
 # Configuration
 DATA_ROOT = Path("split/classification/Merged")  # Update this path
@@ -34,14 +51,6 @@ model_config = {
 
 # Model-specific configurations
 models_to_test = {
-    "ResNext101": {
-        "class": ResNextClassifier,
-        "config": {**model_config, "resnext_version": 101, "target_size": (730*2, 968*2)},
-    },
-    "ResNet101": {
-        "class": ResNetClassifier,
-        "config": {**model_config, "resnet_version": 101, "target_size": (730*2, 968*2)},
-    },
     "SwinTransformer": {
         "class": SwinTransformerClassifier,
         "config": {**model_config, "target_size": (384, 384)},
@@ -49,6 +58,14 @@ models_to_test = {
     "ViT": {
         "class": ViTClassifier,
         "config": {**model_config, "target_size": (384, 384)},
+    },
+    "ResNext101": {
+        "class": ResNextClassifier,
+        "config": {**model_config, "resnext_version": 101, "target_size": (730*2, 968*2)},
+    },
+    "ResNet101": {
+        "class": ResNetClassifier,
+        "config": {**model_config, "resnet_version": 101, "target_size": (730*2, 968*2)},
     },
     "DenseNet121": {
         "class": DenseNetClassifier,
