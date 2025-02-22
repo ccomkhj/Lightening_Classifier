@@ -2,31 +2,16 @@
 
 This repository contains modular PyTorch Lightning implementations of popular deep learning models for image classification. All models inherit from a common `BaseClassifier` class, making it easy to modify, extend, and use for various tasks.
 
-## Models Included
+## Currently Supported Classifiers
 
-1. **ResNetClassifier** (`resnet_classifier.py`)
-   - Supports ResNet versions: 18, 34, 50, 101, 152.
-   - Configurable for transfer learning and fine-tuning.
-
-2. **ResNextClassifier** (`resnext_classifier.py`)
-   - Supports ResNext versions: 50, 101.
-   - Designed for high-performance classification.
-
-3. **DenseNetClassifier** (`densenet_classifier.py`)
-   - Supports DenseNet-121.
-   - Efficient feature reuse with dense connections.
-
-4. **EfficientNetClassifier** (`efficientnet_classifier.py`)
-   - Supports EfficientNet-B0 to B7.
-   - Lightweight and scalable for small datasets.
-
-5. **ViTClassifier** (`vit_classifier.py`)
-   - Vision Transformer (ViT) for global context modeling.
-   - Pre-trained on ImageNet.
-
-6. **SwinTransformerClassifier** (`swin_transformer_classifier.py`)
-   - Swin Transformer for hierarchical feature extraction.
-   - Pre-trained on ImageNet.
+| Model            | Train | Test | Inference | GRAD-CAM |
+|------------------|-------|------|-----------|----------|
+| SwinTransformer  | ✅    | ✅   | ✅        | ✅       |
+| ResNet           | ✅    | ✅   | ✅        | ❌       |
+| ResNext          | ✅    | ✅   | ✅        | ❌       |
+| DenseNet         | ✅    | ✅   | ✅        | ❌       |
+| EfficientNet     | ✅    | ✅   | ✅        | ❌       |
+| ViT              | ✅    | ✅   | ✅        | ❌       |
 
 ## Features
 
@@ -47,16 +32,15 @@ Use the `train_all_models.py` script to train and test all models and check what
 
 After completion, you will get report in csv as below.
 Based on the metric, decide which model is appropriate for your task.
-```
+
 | Model            | Test Accuracy   | Test Precision  | Test Recall     | Test F1         | Training Time  | Timestamp      |
 |------------------|-----------------|-----------------|-----------------|-----------------|----------------|----------------|
-| ResNext101       | 0.78899085521698| 0.7996436357498169| 0.78899085521698| 0.7887938022613525| 1:47:51.260405 | 20250221_094927|
-| ResNet101        | 0.78899085521698| 0.7946293354034424| 0.78899085521698| 0.7877031564712524| 1:03:14.367643 | 20250221_113730|
-| SwinTransformer  | 0.8807339668273926| 0.8827170133590698| 0.8807339072227478| 0.8803048133850098| 0:22:18.137873 | 20250221_124052|
-| ViT              | 0.8440366983413696| 0.8472263813018799| 0.8440366983413696| 0.8441518545150757| 0:22:27.548590 | 20250221_130314|
-| DenseNet121      | 0.853210985660553| 0.8623536229133606| 0.853210985660553| 0.8529086112976074| 0:58:01.608439 | 20250221_132545|
-| EfficientNetB7   | 0.8440366983413696| 0.8501067161560059| 0.8440366983413696| 0.844648003578186| 3:06:57.563459 | 20250221_142354|
-```
+| ResNext101       | 0.78899         | 0.79964         | 0.78899         | 0.78879         | 1:47:51.260405 | 20250221_094927 |
+| ResNet101        | 0.78899         | 0.79463         | 0.78899         | 0.78770         | 1:03:14.367643 | 20250221_113730 |
+| SwinTransformer  | 0.88073         | 0.88272         | 0.88073         | 0.88030         | 0:22:18.137873 | 20250221_124052 |
+| ViT              | 0.84404         | 0.84723         | 0.84404         | 0.84415         | 0:22:27.548590 | 20250221_130314 |
+| DenseNet121      | 0.85321         | 0.86235         | 0.85321         | 0.85291         | 0:58:01.608439 | 20250221_132545 |
+| EfficientNetB7   | 0.84404         | 0.85011         | 0.84404         | 0.84465         | 3:06:57.563459 | 20250221_142354 |
 
 3. **Train, Test and Inference demo**
 Use the `demo.ipynb` to follow the whole workflow with a model architecture.
@@ -64,14 +48,6 @@ Use the `demo.ipynb` to follow the whole workflow with a model architecture.
 4. **GRAD-CAM Visualization**
 
 The [grad_cam.ipynb](grad_cam.ipynb) notebook provides a detailed workflow for generating Grad-CAM (Gradient-weighted Class Activation Mapping) heatmaps to visualize which regions of an image are most influential for the model's predictions.
-
-*Currently supoprted*
-- [x] SwinTransformer
-- [ ] ResNet
-- [ ] ResNext
-- [ ] DenseNet
-- [ ] EfficientNet
-- [ ] ViT
 
 ![Grad-CAM Heatmap](demo/heat_map.png)
 
